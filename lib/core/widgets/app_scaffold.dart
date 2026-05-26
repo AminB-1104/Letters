@@ -8,12 +8,14 @@ class AppScaffold extends StatelessWidget {
     required this.body,
     this.appBar,
     this.floatingActionButton,
+    this.bottomNavigationBar,
     this.padding,
   });
 
   final PreferredSizeWidget? appBar;
   final Widget body;
   final Widget? floatingActionButton;
+  final Widget? bottomNavigationBar;
   final EdgeInsets? padding;
 
   @override
@@ -22,6 +24,7 @@ class AppScaffold extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: appBar,
       floatingActionButton: floatingActionButton,
+      bottomNavigationBar: bottomNavigationBar,
       body: SafeArea(
         child: padding == null ? body : Padding(padding: padding!, child: body),
       ),

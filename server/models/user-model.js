@@ -24,6 +24,27 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    avatar: {
+      type: String,
+      default: '',
+    },
+    bio: {
+      type: String,
+      default: '',
+      maxlength: 160,
+    },
+    friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: [] }],
+    sentRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: [] }],
+    receivedRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: [] }],
+    blockedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: [] }],
+    isOnline: {
+      type: Boolean,
+      default: false,
+    },
+    lastSeen: {
+      type: Date,
+      default: Date.now,
+    },
   },
   { timestamps: true }
 );
