@@ -11,6 +11,7 @@ import '../../../core/theme/app_text_styles.dart';
 import '../../../core/widgets/app_empty_state.dart';
 import '../../../core/widgets/app_error_state.dart';
 import '../../../core/widgets/app_loader.dart';
+import '../../../core/widgets/app_scaffold.dart';
 import '../../../core/widgets/app_text_field.dart';
 import '../models/user_profile.dart';
 import '../models/user_summary.dart';
@@ -49,35 +50,50 @@ class _SearchUsersScreenState extends State<SearchUsersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.s16,
-        AppSpacing.s16,
-        AppSpacing.s16,
-        0,
+    return AppScaffold(
+      appBar: AppBar(
+        title: const Text('Search'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.goNamed(RouteNames.chats);
+            }
+          },
+        ),
       ),
-      child: Column(
-        children: [
-          AppTextField(
-            controller: _controller,
-            hint: 'Search by username',
-            prefixIcon: Icons.search,
-            onChanged: _onChanged,
-            suffixIcon: _controller.text.isEmpty
-                ? null
-                : IconButton(
-                    icon: const Icon(Icons.clear),
-                    onPressed: () {
-                      _controller.clear();
-                      _debounce?.cancel();
-                      context.read<UserProvider>().clearSearch();
-                      setState(() {});
-                    },
-                  ),
-          ),
-          const SizedBox(height: AppSpacing.s16),
-          Expanded(child: Consumer<UserProvider>(builder: _buildBody)),
-        ],
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.s16,
+          AppSpacing.s16,
+          AppSpacing.s16,
+          0,
+        ),
+        child: Column(
+          children: [
+            AppTextField(
+              controller: _controller,
+              hint: 'Search by username',
+              prefixIcon: Icons.search,
+              onChanged: _onChanged,
+              suffixIcon: _controller.text.isEmpty
+                  ? null
+                  : IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        _controller.clear();
+                        _debounce?.cancel();
+                        context.read<UserProvider>().clearSearch();
+                        setState(() {});
+                      },
+                    ),
+            ),
+            const SizedBox(height: AppSpacing.s16),
+            Expanded(child: Consumer<UserProvider>(builder: _buildBody)),
+          ],
+        ),
       ),
     );
   }

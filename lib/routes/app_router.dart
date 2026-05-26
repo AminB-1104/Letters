@@ -9,6 +9,8 @@ import '../core/constants/route_names.dart';
 import '../features/auth/providers/auth_provider.dart';
 import '../features/auth/screens/login_screen.dart';
 import '../features/auth/screens/signup_screen.dart';
+import '../features/chat/screens/chat_list_screen.dart';
+import '../features/chat/screens/chat_screen.dart';
 import '../features/social/screens/friend_requests_screen.dart';
 import '../features/social/screens/friends_list_screen.dart';
 import '../features/social/screens/search_users_screen.dart';
@@ -44,7 +46,7 @@ class AppRouter {
       GoRoute(
         path: RouteNames.homePath,
         name: RouteNames.home,
-        redirect: (_, _) => RouteNames.searchPath,
+        redirect: (_, _) => RouteNames.chatsPath,
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
@@ -52,9 +54,9 @@ class AppRouter {
         branches: [
           StatefulShellBranch(routes: [
             GoRoute(
-              path: RouteNames.searchPath,
-              name: RouteNames.search,
-              builder: (_, _) => const SearchUsersScreen(),
+              path: RouteNames.chatsPath,
+              name: RouteNames.chats,
+              builder: (_, _) => const ChatListScreen(),
             ),
           ]),
           StatefulShellBranch(routes: [
@@ -72,6 +74,18 @@ class AppRouter {
             ),
           ]),
         ],
+      ),
+      GoRoute(
+        path: RouteNames.searchPath,
+        name: RouteNames.search,
+        builder: (_, _) => const SearchUsersScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.chatScreenPath,
+        name: RouteNames.chatScreen,
+        builder: (_, state) => ChatScreen(
+          chatId: state.pathParameters['chatId']!,
+        ),
       ),
       GoRoute(
         path: RouteNames.userProfilePath,
@@ -101,8 +115,8 @@ class AppRouter {
     }
 
     // Authenticated: send users away from auth/splash screens to the default
-    // home branch. Any /home* or /u/* path is allowed to render normally.
-    if (onSplash || onAuthRoute) return RouteNames.searchPath;
+    // home branch. Any /home*, /u/*, /chat/* path is allowed to render normally.
+    if (onSplash || onAuthRoute) return RouteNames.chatsPath;
     return null;
   }
 }

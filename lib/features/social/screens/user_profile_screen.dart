@@ -10,6 +10,7 @@ import '../../../core/widgets/app_button.dart';
 import '../../../core/widgets/app_error_state.dart';
 import '../../../core/widgets/app_loader.dart';
 import '../../../core/widgets/app_scaffold.dart';
+import '../../chat/providers/chat_provider.dart';
 import '../models/user_profile.dart';
 import '../models/user_summary.dart';
 import '../providers/friend_provider.dart';
@@ -151,15 +152,48 @@ class _RelationshipActions extends StatelessWidget {
           ],
         );
       case RelationshipStatus.friend:
-        return AppButton(
-          label: 'Remove friend',
-          icon: Icons.person_remove_alt_1,
-          variant: AppButtonVariant.outlined,
-          isLoading: isBusy,
-          expand: true,
-          onPressed: () => _confirmRemove(context, profile.user),
+        final chatBusy = context.select<ChatProvider, bool>(
+          (p) => p.isBusy(profile.user.id),
+        );
+        return Column(
+          children: [
+            AppButton(
+              label: 'Message',
+              icon: Icons.chat_bubble_outline,
+              isLoading: chatBusy,
+              expand: true,
+              onPressed: () => _openChat(context, profile.user),
+            ),
+            const SizedBox(height: AppSpacing.s12),
+            AppButton(
+              label: 'Remove friend',
+              icon: Icons.person_remove_alt_1,
+              variant: AppButtonVariant.outlined,
+              isLoading: isBusy,
+              expand: true,
+              onPressed: () => _confirmRemove(context, profile.user),
+            ),
+          ],
         );
     }
+  }
+
+  Future<void> _openChat(BuildContext context, UserSummary user) async {
+    final chats = context.read<ChatProvider>();
+    final chat = await chats.createOrOpenChat(user);
+    if (chat == null) {
+      if (context.mounted && chats.error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(chats.error!)),
+        );
+      }
+      return;
+    }
+    if (!context.mounted) return;
+    context.goNamed(
+      RouteNames.chatScreen,
+      pathParameters: {'chatId': chat.id},
+    );
   }
 
   Future<void> _send(BuildContext context, UserSummary user) async {

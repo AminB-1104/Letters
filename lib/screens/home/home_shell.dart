@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/constants/route_names.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/app_scaffold.dart';
 import '../../features/auth/providers/auth_provider.dart';
@@ -13,7 +14,7 @@ class HomeShell extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
   static const _tabs = <_HomeTab>[
-    _HomeTab(icon: Icons.search, label: 'Search'),
+    _HomeTab(icon: Icons.chat_bubble_outline, label: 'Chats'),
     _HomeTab(icon: Icons.people_outline, label: 'Friends'),
     _HomeTab(icon: Icons.mark_email_unread_outlined, label: 'Requests'),
   ];
@@ -34,6 +35,11 @@ class HomeShell extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Letters'),
         actions: [
+          IconButton(
+            tooltip: 'Search users',
+            icon: const Icon(Icons.search),
+            onPressed: () => context.goNamed(RouteNames.search),
+          ),
           IconButton(
             tooltip: 'Toggle theme',
             icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),

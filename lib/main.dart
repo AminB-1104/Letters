@@ -7,6 +7,10 @@ import 'core/services/storage_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'features/auth/services/auth_service.dart';
+import 'features/chat/providers/chat_provider.dart';
+import 'features/chat/providers/message_provider.dart';
+import 'features/chat/services/chat_service.dart';
+import 'features/chat/services/message_service.dart';
 import 'features/social/providers/friend_provider.dart';
 import 'features/social/providers/social_provider.dart';
 import 'features/social/providers/user_provider.dart';
@@ -36,11 +40,15 @@ class _LettersAppState extends State<LettersApp> {
   late final AuthService _authService;
   late final UserService _userService;
   late final FriendService _friendService;
+  late final ChatService _chatService;
+  late final MessageService _messageService;
   late final AuthProvider _authProvider;
   late final AppSettingsProvider _settingsProvider;
   late final UserProvider _userProvider;
   late final FriendProvider _friendProvider;
   late final SocialProvider _socialProvider;
+  late final ChatProvider _chatProvider;
+  late final MessageProvider _messageProvider;
   late final AppRouter _router;
 
   AuthStatus _lastAuthStatus = AuthStatus.unknown;
@@ -52,6 +60,8 @@ class _LettersAppState extends State<LettersApp> {
     _authService = AuthService(_api);
     _userService = UserService(_api);
     _friendService = FriendService(_api);
+    _chatService = ChatService(_api);
+    _messageService = MessageService(_api);
     _authProvider = AuthProvider(
       storage: widget.storage,
       authService: _authService,
@@ -60,6 +70,11 @@ class _LettersAppState extends State<LettersApp> {
     _userProvider = UserProvider(userService: _userService);
     _friendProvider = FriendProvider(friendService: _friendService);
     _socialProvider = SocialProvider(friendProvider: _friendProvider);
+    _chatProvider = ChatProvider(chatService: _chatService);
+    _messageProvider = MessageProvider(
+      messageService: _messageService,
+      chatProvider: _chatProvider,
+    );
     _router = AppRouter(auth: _authProvider);
 
     _lastAuthStatus = _authProvider.status;
@@ -74,6 +89,8 @@ class _LettersAppState extends State<LettersApp> {
       _userProvider.reset();
       _friendProvider.reset();
       _socialProvider.reset();
+      _chatProvider.reset();
+      _messageProvider.reset();
     }
     _lastAuthStatus = next;
   }
@@ -81,6 +98,8 @@ class _LettersAppState extends State<LettersApp> {
   @override
   void dispose() {
     _authProvider.removeListener(_onAuthChanged);
+    _messageProvider.dispose();
+    _chatProvider.dispose();
     _socialProvider.dispose();
     _friendProvider.dispose();
     _userProvider.dispose();
@@ -98,6 +117,8 @@ class _LettersAppState extends State<LettersApp> {
         Provider<AuthService>.value(value: _authService),
         Provider<UserService>.value(value: _userService),
         Provider<FriendService>.value(value: _friendService),
+        Provider<ChatService>.value(value: _chatService),
+        Provider<MessageService>.value(value: _messageService),
         ChangeNotifierProvider<AppSettingsProvider>.value(
           value: _settingsProvider,
         ),
@@ -105,6 +126,8 @@ class _LettersAppState extends State<LettersApp> {
         ChangeNotifierProvider<FriendProvider>.value(value: _friendProvider),
         ChangeNotifierProvider<UserProvider>.value(value: _userProvider),
         ChangeNotifierProvider<SocialProvider>.value(value: _socialProvider),
+        ChangeNotifierProvider<ChatProvider>.value(value: _chatProvider),
+        ChangeNotifierProvider<MessageProvider>.value(value: _messageProvider),
       ],
       child: Consumer<AppSettingsProvider>(
         builder: (context, settings, _) {

@@ -8,6 +8,8 @@ class RouteNames {
   static const String search = 'search';
   static const String friends = 'friends';
   static const String requests = 'requests';
+  static const String chats = 'chats';
+  static const String chatScreen = 'chat_screen';
   static const String userProfile = 'user_profile';
 
   static const String splashPath = '/splash';
@@ -17,7 +19,10 @@ class RouteNames {
   static const String searchPath = '/home/search';
   static const String friendsPath = '/home/friends';
   static const String requestsPath = '/home/requests';
+  static const String chatsPath = '/home/chats';
+  static const String chatScreenPath = '/chat/:chatId';
   static const String userProfilePath = '/u/:username';
 
   static String userProfilePathFor(String username) => '/u/$username';
+  static String chatScreenPathFor(String chatId) => '/chat/$chatId';
 }

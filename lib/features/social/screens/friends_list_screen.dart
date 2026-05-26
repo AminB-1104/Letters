@@ -8,6 +8,7 @@ import '../../../core/theme/app_spacing.dart';
 import '../../../core/widgets/app_empty_state.dart';
 import '../../../core/widgets/app_error_state.dart';
 import '../../../core/widgets/app_loader.dart';
+import '../../chat/providers/chat_provider.dart';
 import '../models/user_summary.dart';
 import '../providers/friend_provider.dart';
 import '../providers/user_provider.dart';
@@ -117,6 +118,9 @@ class _FriendTrailing extends StatelessWidget {
       icon: const Icon(Icons.more_vert, color: AppColors.onSurfaceMuted),
       onSelected: (item) async {
         switch (item) {
+          case _FriendMenuItem.message:
+            await _openChat(context, user);
+            break;
           case _FriendMenuItem.viewProfile:
             context.goNamed(
               RouteNames.userProfile,
@@ -130,6 +134,10 @@ class _FriendTrailing extends StatelessWidget {
       },
       itemBuilder: (_) => const [
         PopupMenuItem(
+          value: _FriendMenuItem.message,
+          child: Text('Send message'),
+        ),
+        PopupMenuItem(
           value: _FriendMenuItem.viewProfile,
           child: Text('View profile'),
         ),
@@ -138,6 +146,24 @@ class _FriendTrailing extends StatelessWidget {
           child: Text('Remove friend'),
         ),
       ],
+    );
+  }
+
+  Future<void> _openChat(BuildContext context, UserSummary user) async {
+    final chats = context.read<ChatProvider>();
+    final chat = await chats.createOrOpenChat(user);
+    if (chat == null) {
+      if (context.mounted && chats.error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(chats.error!)),
+        );
+      }
+      return;
+    }
+    if (!context.mounted) return;
+    context.goNamed(
+      RouteNames.chatScreen,
+      pathParameters: {'chatId': chat.id},
     );
   }
 
@@ -173,4 +199,4 @@ class _FriendTrailing extends StatelessWidget {
   }
 }
 
-enum _FriendMenuItem { viewProfile, remove }
+enum _FriendMenuItem { message, viewProfile, remove }

@@ -3,7 +3,9 @@
     "allow": [
       "Bash(curl -s -o /tmp/notfound.json -w \"HTTP:%{http_code}\\\\n\" http://localhost:3000/does-not-exist)",
       "Read(//tmp/**)",
-      "Bash(node server.js)"
+      "Bash(node server.js)",
+      "Bash(flutter analyze *)",
+      "Bash(flutter test *)"
     ]
   }
 }
