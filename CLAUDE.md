@@ -369,6 +369,7 @@ curl "http://localhost:3000/api/messages/<chat-id>?page=1&limit=30" `
 - Shell is PowerShell — use `;` to chain, not `&&`; use `$env:VAR` not `$VAR`.
 - `flutter run -d windows` additionally needs the Visual Studio "Desktop development with C++" workload installed.
 - MongoDB is **not** part of the project install — you need a local `mongod` (or remote URI in `server/.env`'s `MONGO_URI`) before `/api/auth/*` endpoints will respond. `/health` works without it.
+- **Physical-device runs need a reachable `API_BASE_URL`.** The repo-root `.env` defaults to `http://localhost:3000`, which on a phone resolves to the phone itself → all `/api/*` calls fail with `Connection Refused`. Switch to the dev machine's LAN IP (e.g. `http://192.168.0.176:3000` — discover via `Get-NetIPAddress -AddressFamily IPv4`) and ensure phone + PC share the same Wi-Fi. The backend already binds to `0.0.0.0` (Node default when `app.listen` omits the host arg), so no server change is needed. If the LAN IP still hangs, Windows Firewall is blocking inbound 3000 — run elevated: `New-NetFirewallRule -DisplayName "Letters Backend 3000" -Direction Inbound -Protocol TCP -LocalPort 3000 -Action Allow -Profile Private`. Verify from the phone's browser at `http://<lan-ip>:3000/health` before retrying sign-in. **Fully stop and re-run the Flutter app** after editing `.env` — `flutter_dotenv` loads once in `main()` and hot reload won't re-read it. USB-only alternative: keep `localhost` and run `adb reverse tcp:3000 tcp:3000` (must rerun after each reconnect).
 
 ## Linting
 
