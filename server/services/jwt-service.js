@@ -3,9 +3,7 @@
 const jwt = require('jsonwebtoken');
 const env = require('../config/env');
 
-const DEFAULT_EXPIRES_IN = '7d';
-
-function sign(payload, { expiresIn = DEFAULT_EXPIRES_IN } = {}) {
+function sign(payload, { expiresIn = env.jwtExpiresIn } = {}) {
   return jwt.sign(payload, env.jwtSecret, { expiresIn });
 }
 
